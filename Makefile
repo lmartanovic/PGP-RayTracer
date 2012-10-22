@@ -24,6 +24,9 @@ clean:
 
 clear: clean
 
+push:
+	git remote add origin https://github.com/lmartanovic/PGP-RayTracer.git && git push -u origin master
+
 run:
 	./$(BIN)
 
