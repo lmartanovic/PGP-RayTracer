@@ -1,0 +1,8 @@
+- Ray, Light (Point, Dir, Spot), Primitives (Sphere, Plane), Intersection
+- basic rendering (Ray Casting)
+- Shadows and multiple ray bounces
+- Procedural and noise textures (wood, marble, checkerboard, clouds, ...)
+- Reflexion
+- Refraction
+- Adaptive Subsampling
+- Testing, measuring
