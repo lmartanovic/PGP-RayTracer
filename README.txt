@@ -13,6 +13,10 @@
  Basic Color and Material representation implemented.
  Basic primitive abstraction and Sphere primitive implemented.
  Basic renderable object class (Geometry(Shape) + Material) implemented
+ Plane primitive added.
+ Basic Scene structure added;
+ Basic point light added;
+ Base of Phong lighting model set up.
  (See TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------
