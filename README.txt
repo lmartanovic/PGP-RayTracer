@@ -9,7 +9,7 @@
  version). It's development is a part of a course project for PGP course at BUT
  Brno.
 
- Vector class implemented so far (see TODO for rough prject roadmap).
+ Vector and Ray classes implemented so far (see TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------
  This software is not copyrighted.
