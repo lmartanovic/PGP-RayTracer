@@ -3,7 +3,7 @@
 *******************************************************************************
 * Contents                                                                    *
 * --------                                                                    *
-* - Light - class representing a basic point light.                           *
+* - Scene - Very basic scene representation - list of all objects and lights. *
 *                                                                             *
 *******************************************************************************
 * Author                                                                      *
@@ -19,34 +19,55 @@
 * You may use, modify or distribute it freely.                                *
 *                                                                             *
 ******************************************************************************/
-#ifndef LIGTH_H
-#define LIGTH_H
 
-#include "Color.h"
-#include "Vector.h"
+#include "Scene.h"
 
-class Light
+Scene::Scene() {}
+
+//! Adding active ligth into scene
+void Scene::addLight(Light l)
 {
-public:
-  //! Basic constructor
-  Light();
-  //! Light position accessor
-  Vector& getPosition();
-  //! Diffuse color component accessor
-  Color& getDiffuseColor();
-  //! Specular color component accessor
-  Color& getSpecularColor();
-  //! Light position setter
-  void setPosition(const Vector& pos);
-  //! Diffuse color component setter
-  void setDiffuseColor(const Color& col);
-  //! Specular color component setter
-  void setSpecularColor(const Color& col);
+  lights.push_back(l);
+}
 
-private:
-  Vector position;      /*!< Light position */
-  Color diffuseColor;   /*!< Diffuse color component */
-  Color specularColor;  /*!< Specular color component */
-};
+//! Adding renderable object into scene
+void Scene::addObject(Object o)
+{
+  objects.push_back(o);
+}
 
-#endif // LIGTH_H
+//! Get list of all lights
+std::vector<Light>& Scene::getLights()
+{
+  return lights;
+}
+
+//! Get list of all renderable objects
+std::vector<Object>& Scene::getObjects()
+{
+  return objects;
+}
+
+//! Get number of all renderable objects
+unsigned int Scene::getObjectCount()
+{
+  return objects.size();
+}
+
+//! Get number of all light sources
+unsigned int Scene::getLightCount()
+{
+  return lights.size();
+}
+
+//! Get the scene background color
+Color& Scene::getBackgroundColor()
+{
+  return backgroundColor;
+}
+
+//! Background color setter
+void Scene::setBackgroundColor(const Color& col)
+{
+  backgroundColor = col;
+}

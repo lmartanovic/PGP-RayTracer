@@ -3,7 +3,7 @@
 *******************************************************************************
 * Contents                                                                    *
 * --------                                                                    *
-* - Light - class representing a basic point light.                           *
+* - Scene - Very basic scene representation - list of all objects and lights. *
 *                                                                             *
 *******************************************************************************
 * Author                                                                      *
@@ -19,34 +19,39 @@
 * You may use, modify or distribute it freely.                                *
 *                                                                             *
 ******************************************************************************/
-#ifndef LIGTH_H
-#define LIGTH_H
+#ifndef SCENE_H
+#define SCENE_H
+
+#include <vector>
 
 #include "Color.h"
-#include "Vector.h"
+#include "Light.h"
+#include "Object.h"
 
-class Light
+class Scene
 {
 public:
-  //! Basic constructor
-  Light();
-  //! Light position accessor
-  Vector& getPosition();
-  //! Diffuse color component accessor
-  Color& getDiffuseColor();
-  //! Specular color component accessor
-  Color& getSpecularColor();
-  //! Light position setter
-  void setPosition(const Vector& pos);
-  //! Diffuse color component setter
-  void setDiffuseColor(const Color& col);
-  //! Specular color component setter
-  void setSpecularColor(const Color& col);
-
+  Scene();
+  //! Adding active ligth into scene
+  void addLight(Light l);
+  //! Adding renderable object into scene
+  void addObject(Object o);
+  //! Get list of all lights
+  std::vector<Light>& getLights();
+  //! Get list of all renderable objects
+  std::vector<Object>& getObjects();
+  //! Get number of all renderable objects
+  unsigned int getObjectCount();
+  //! Get number of all light sources
+  unsigned int getLightCount();
+  //! Get the scene background color
+  Color& getBackgroundColor();
+  //! Background color setter
+  void setBackgroundColor(const Color& col);
 private:
-  Vector position;      /*!< Light position */
-  Color diffuseColor;   /*!< Diffuse color component */
-  Color specularColor;  /*!< Specular color component */
+  std::vector<Light> lights;    /*!< List of all primary light sources */
+  std::vector<Object> objects;  /*!< List of all renderable obects */
+  Color backgroundColor;        /*! Default background color */
 };
 
-#endif // LIGTH_H
+#endif // SCENE_H
