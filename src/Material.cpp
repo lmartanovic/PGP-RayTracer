@@ -4,7 +4,7 @@
 * Contents                                                                    *
 * --------                                                                    *
 * - Material - class representing object material properties for Phong        *
-               lighting model.                                                *
+*              lighting model.                                                *
 *                                                                             *
 *******************************************************************************
 * Author                                                                      *

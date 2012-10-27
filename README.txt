@@ -9,7 +9,11 @@
  version). It's development is a part of a course project for PGP course at BUT
  Brno.
 
- Vector and Ray classes implemented so far (see TODO for rough prject roadmap).
+ Vector and Ray classes implemented.
+ Basic Color and Material representation implemented.
+ Basic primitive abstraction and Sphere primitive implemented.
+ Basic renderable object class (Geometry(Shape) + Material) implemented
+ (See TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------
  This software is not copyrighted.

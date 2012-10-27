@@ -1,9 +1,10 @@
 /******************************************************************************
-* PGP Project - Ray Tracer with Adaptive Subsampling - Vector.cpp             *
+* PGP Project - Ray Tracer with Adaptive Subsampling - Vector.h               *
 *******************************************************************************
 * Contents                                                                    *
 * --------                                                                    *
-* - Sphere - Basic geometry primitive - sphere.                               *
+* - Object - class representing complete object with geometry and material    *
+*            properties ready to be set into scene and rendered.              *
 *                                                                             *
 *******************************************************************************
 * Author                                                                      *
@@ -19,66 +20,35 @@
 * You may use, modify or distribute it freely.                                *
 *                                                                             *
 ******************************************************************************/
-#include "Sphere.h"
-#include <cmath>
+#ifndef OBJECT_H
+#define OBJECT_H
 
-//! Basic constructor
-Sphere::Sphere()
-: c(0.0,0.0,0.0),
-  r(1.0)
-{}
+#include "Material.h"
+#include "Shape.h"
 
-//! Primary constructor
-Sphere::Sphere(const Vector& center, double radius)
-: c(center),
-  r(radius)
-{}
-
-//! Intersection with given ray
-bool Sphere::intersect(Ray& ray, double& t)
+class Object
 {
-  //solve the quadratic equasion given by sphere and ray equasion
-  Vector dist = ray.getOrigin() - c;
-  double B = dot(ray.getDirection(), dist);
-  double D = B*B - dot(dist, dist) + r*r;
+public:
+  //! Basic constructor
+  Object();
+  //! Primary constructor
+  /*!
+    \param sh - Shape representing object geometry
+    \param mat - Object material
+  */
+  Object(Shape& sh, Material& mat);
+  //! Geometry accessor
+  Shape* getShape();
+  //! Material accessor
+  Material& getMaterial();
+  //! Geometry setter
+  void setShape(Shape& sh);
+  //! Material setter
+  void setMaterial(Material& mat);
 
-  //if there is no real solution (discriminant < 0) - no intersection exists
-  if(D < 0.0)
-  {
-    return false;
-  }
-  //esle compute intersection points
-  double t0 = -B - sqrt(D);
-  double t1 = -B + sqrt(D);
-  bool ret = false;
-  //if the first ip is in front
-  if(t0 > 0.01)
-  {
-    if(t < 0.0 || t0 < t) //this is first tested object or closer then previous
-    {
-      t = t0;
-      ret = true;
-    }
-  }
-  //second ip test
-  if(t1 > 0.01)
-  {
-    if(t < 0.0 || t1 < t) //this is first tested object or closer then previous
-    {
-      t = t1;
-      ret = true;
-    }
-  }
+private:
+  Shape* shape;       /*!< Object geometry */
+  Material material;  /*!< Object material */
+};
 
-  return ret;
-}
-
-//! Normal at given intersection point
-Vector Sphere::getNormal(const Vector& poi)
-{
-  //compute vector from center to intersection point
-  Vector normal = c-poi;
-  //normalize it
-  normal.normalize();
-  return normal;
-}
+#endif // OBJECT_H

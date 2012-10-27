@@ -1,8 +1,12 @@
-- Ray, Light (Point, Dir, Spot), Primitives (Sphere, Plane), Intersection
-- basic rendering (Ray Casting)
-- Shadows and multiple ray bounces
-- Procedural and noise textures (wood, marble, checkerboard, clouds, ...)
-- Reflexion
+- Light (Point) -> Scene (Objects + Lights)
+- Complete Phong lighting ray-casting
+- Redo Makefile
+- Object to delete its geometry?
+- Light (Point, Dir, Spot), Primitives (Sphere, Plane), Intersection
+- Texture class (Procedural and noise(wood, marble, checkerboard, clouds, ...))
+- Add Texture component to Material
+- Shadows and multiple ray bounces (ray-tracing)
+- Reflection
 - Refraction
 - Adaptive Subsampling
 - Testing, measuring
