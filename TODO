@@ -1,4 +1,3 @@
-- Scene (Objects + Lights)
 - raytrace function (out of main)
 - Complete Phong lighting ray-casting
 - Redo Makefile
