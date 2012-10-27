@@ -22,7 +22,9 @@
 ******************************************************************************/
 #include "Material.h"
 
-Material::Material() {}
+Material::Material()
+: diffuseIntensity(1.0)
+{}
 
 //! Ambient color component accessor
 Color& Material::getAmbientColor()
@@ -54,6 +56,11 @@ double Material::getShininess()
 {
   return shininess;
 }
+//! Diffuse intensity accessor
+double Material::getDiffuseIntensity()
+{
+  return diffuseIntensity;
+}
 //! Ambient color component setter
 void Material::setAmbientColor(const Color& col)
 {
@@ -79,8 +86,14 @@ void Material::setRefractance(double refr)
 {
   refractance = refr;
 }
-//!Shininess intensity setter
+//! Shininess intensity setter
 void Material::setShininess(double shin)
 {
   shininess = shin;
+}
+
+//! Diffuse intensity setter
+void Material::setDiffuseIntensity(double intens)
+{
+  diffuseIntensity = intens;
 }

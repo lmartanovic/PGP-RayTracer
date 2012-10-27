@@ -37,6 +37,8 @@ public:
 
   //! In-place constant value multiplication operator
   Color& operator*=(double k);
+  //! In place color addition operator
+  Color& operator+=(const Color& col);
 
   double r; /*!< Red component */
   double g; /*!< Green component */
@@ -53,6 +55,12 @@ inline Color operator+(const Color& c1, const Color& c2)
 inline Color operator-(const Color& c1, const Color& c2)
 {
   return Color(c1.r - c2.r, c1.g - c2.g, c1.b - c2.b);
+}
+
+//! Color-Color multiplication
+inline Color operator*(const Color& c1, const Color& c2)
+{
+  return Color(c1.r*c2.r, c1.g*c2.g, c1.b*c2.b);
 }
 
 //! Color-constant value multiplication - left

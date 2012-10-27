@@ -43,6 +43,8 @@ public:
   double getRefractance();
   //! Shininess intensity accessor
   double getShininess();
+  //! Diffuse intensity accessor
+  double getDiffuseIntensity();
   //! Ambient color component setter
   void setAmbientColor(const Color& col);
   //! Diffuse color component setter
@@ -55,6 +57,8 @@ public:
   void setRefractance(double refr);
   //!Shininess intensity setter
   void setShininess(double shin);
+  //! Diffuse intensity setter
+  void setDiffuseIntensity(double intens);
 
 private:
   Color ambientColor;   /*!< Ambient color component */
@@ -63,6 +67,7 @@ private:
   double reflectance;   /*!< Reflectance factor 0.0 - 1.0 */
   double refractance;   /*!< Refractance factor */
   double shininess;     /*!< Shininess intensity */
+  double diffuseIntensity; /*!< Intensity of diffuse color */
 };
 
 #endif // MATERIAL_H
