@@ -24,9 +24,14 @@
 
 #include <vector>
 
+#include <SFML/Graphics.hpp>
+
 #include "Color.h"
 #include "Light.h"
 #include "Object.h"
+
+#define EPSILON 0.001
+#define MAX_DEPTH 2
 
 class Scene
 {
@@ -48,10 +53,22 @@ public:
   Color& getBackgroundColor();
   //! Background color setter
   void setBackgroundColor(const Color& col);
+  //! Output image setter
+  void setOutputImage(const sf::Image& img);
+
+  //! Main raytracing method
+  /*!
+    @param r - traced ray
+    @param depth - recursion depth
+  */
+  Color trace(Ray & r, int depth);
+  //! Shadow ray tracing
+  bool inShadow(Ray & r, Object* o);
 private:
   std::vector<Light> lights;    /*!< List of all primary light sources */
   std::vector<Object> objects;  /*!< List of all renderable obects */
-  Color backgroundColor;        /*! Default background color */
+  Color backgroundColor;        /*!< Default background color */
+  sf::Image outputImg;          /*!< Output image */
 };
 
 #endif // SCENE_H

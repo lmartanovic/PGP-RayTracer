@@ -43,26 +43,30 @@ int main()
   sf::Image image;
   image.create(SCR_WIDTH, SCR_HEIGHT);
 
+  //set up the projection plane and camera
   double m_SX, m_SY;
-  double m_WX1 = -4, m_WX2 = 4, m_WY1 = m_SY = 3, m_WY2 = -3;
-  double m_DX = (m_WX2 - m_WX1) / SCR_WIDTH;
+  double m_WX1 = -4.5, m_WX2 = 3.5, m_WY1 = m_SY = -3, m_WY2 = 3;
+  double m_DX = (m_WX2 - m_WX1) / SCR_WIDTH; //velkost samplu - posun o zlomok px
 	double m_DY = (m_WY2 - m_WY1) / SCR_HEIGHT;
 
-  Vector cameraPos(0.0, 0.0, -5.0);
-  //scene
+  Vector cameraPos(-0.5, 0.0, -3.0);
+
+  //create scene geometry
   Sphere s1(Vector(1.0, -0.8, 3.0), 2.5);
   Sphere s2(Vector(-5.5, -0.5, 7.0), 2.0);
   Plane p1(Vector(0.0, 1.0, 0.0), Vector(0.0, -4.4, 0.0));
-
+  //create materials
   Material mat1;
   mat1.setDiffuseColor(Color(0.7, 0.7, 0.7));
   mat1.setSpecularColor(Color(0.7, 0.7, 0.7));
   mat1.setShininess(20.0);
+  mat1.setReflectance(0.6);
   Material mat2;
   mat2.setDiffuseColor(Color(0.7, 0.7, 1.0));
   mat2.setDiffuseIntensity(0.1);
   mat2.setSpecularColor(Color(0.7, 0.7, 0.7));
   mat2.setShininess(20.0);
+  mat2.setReflectance(1.0);
   Material mat3;
   mat3.setDiffuseColor(Color(0.4, 0.3, 0.3));
 
@@ -78,81 +82,33 @@ int main()
   Object sp3;
   sp3.setShape(p1);
   sp3.setMaterial(mat3);
-  Object* intersected = NULL;
 
+  //create lights
   Light light1;
   light1.setPosition(Vector(0.0, 5.0, 5.0));
   light1.setDiffuseColor(Color(0.6, 0.6, 0.6));
   Light light2;
   light2.setPosition(Vector(2.0, 5.0, 1.0));
-  light1.setDiffuseColor(Color(0.7, 0.7, 0.9));
+  light2.setDiffuseColor(Color(0.7, 0.7, 0.9));
 
+  //setup scene
   Scene scene;
   scene.addObject(sp1);
   scene.addObject(sp2);
   scene.addObject(sp3);
   scene.addLight(light1);
   scene.addLight(light2);
+  scene.setOutputImage(image);
 
-  for(int y = 0; y < SCR_HEIGHT; y++)
+  for(int y = SCR_HEIGHT -1 ; y >= 0; y--)
   {
     m_SX = m_WX1;
     for(int x = 0; x < SCR_WIDTH; x++)
     {
-      Color finalColor;
-      Vector dir = Vector(m_SX, m_SY, 0.0) - cameraPos;
+      Vector dir = Vector(m_SX, m_SY, 0.0) - cameraPos; //projekcne platno zarovno s xy (kolme na z os)
       dir.normalize();
       Ray r = Ray(cameraPos, dir);
-      double t = -1;
-      intersected = NULL;
-      //get nearest intersecting object
-      vector<Object> objcts = scene.getObjects();
-      for(vector<Object>::iterator i = objcts.begin(); i != objcts.end(); i++)
-      {
-        if((*i).getShape()->intersect(r, t))
-        {
-          intersected = &(*i);
-        }
-      }
-      //compute color
-      if(intersected == NULL)
-      {
-        finalColor += scene.getBackgroundColor();
-      }
-      else{
-        //add material ambient component
-        finalColor += intersected->getMaterial().getAmbientColor();
-        //compute intersection point
-        Vector PoI = r.getOrigin() + r.getDirection()*t;
-        //get normal
-        Vector N = intersected->getShape()->getNormal(PoI);
-
-        vector<Light> ls = scene.getLights();
-        for(vector<Light>::iterator i = ls.begin(); i != ls.end(); i++)
-        {
-          //get light vector
-          Vector L = PoI - (*i).getPosition();
-          L.normalize();
-          //compute lightness factor
-          double dd = dot(N,L);
-          //if any, add lights contribution
-          if(dd > 0)
-          {
-            finalColor += intersected->getMaterial().getDiffuseColor()
-                          * intersected->getMaterial().getDiffuseIntensity()
-                          * (*i).getDiffuseColor()
-                          *dd;
-          }
-          Vector V = -1*r.getDirection();
-          Vector R = L - 2.0*dot(L,N) * N;
-          dd = dot(V,R);
-          if(dd > 0)
-          {
-            double spec = powf(dd,intersected->getMaterial().getShininess());
-            finalColor += spec * intersected->getMaterial().getSpecularColor();
-          }
-        }
-      }
+      Color finalColor = scene.trace(r, 0);
 
       sf::Color col(finalColor.r*255,
                     finalColor.g*255,
