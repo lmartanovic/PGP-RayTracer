@@ -17,6 +17,8 @@
  Basic Scene structure added;
  Basic point light added;
  Base of Phong lighting model set up.
+ Shadowing
+ Reflections
  (See TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------
