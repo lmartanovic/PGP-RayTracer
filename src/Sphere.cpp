@@ -35,29 +35,47 @@ Sphere::Sphere(const Vector& center, double radius)
 {}
 
 //! Intersection with given ray
-bool Sphere::intersect(Ray& ray, double& t)
+int Sphere::intersect(Ray& ray, double& t)
 {
   //solve the quadratic equasion given by sphere and ray equasion
   Vector dist = ray.getOrigin() - c;
-  double B = dot(ray.getDirection(), dist);
+  double B = -dot(ray.getDirection(), dist);
   double D = B*B - dot(dist, dist) + r*r;
 
   //if there is no real solution (discriminant < 0) - no intersection exists
   if(D < 0.0)
   {
-    return false;
+    return 0;
   }
   //esle compute intersection points
-  double t0 = -B - sqrt(D);
-  double t1 = -B + sqrt(D);
-  bool ret = false;
+  D = sqrtf(D);
+  double t0 = B - D;
+  double t1 = B + D;
+  int ret = MISS;
   //if the first ip is in front
+  /*if(t1 > 0.01)
+  {
+    if(t0 < 0.0)
+    {
+      if(t1 < t)
+      {
+        t = t1;
+        ret = INPRIM;
+      }
+    }else{
+      if(t0 < t)
+      {
+        t = t0;
+        ret = HIT;
+      }
+    }
+  }*/
   if(t0 > 0.01)
   {
     if(t < 0.0 || t0 < t) //this is first tested object or closer then previous
     {
       t = t0;
-      ret = true;
+      ret = HIT;
     }
   }
   //second ip test
@@ -66,7 +84,7 @@ bool Sphere::intersect(Ray& ray, double& t)
     if(t < 0.0 || t1 < t) //this is first tested object or closer then previous
     {
       t = t1;
-      ret = true;
+      ret = INPRIM;
     }
   }
 

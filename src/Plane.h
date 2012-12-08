@@ -38,7 +38,7 @@ public:
   Plane(const Vector& n, const Vector& origin);
 
   //! Intersection with given ray
-  bool intersect(Ray& ray, double& t);
+  int intersect(Ray& ray, double& t);
   //! Normal accessor
   Vector getNormal(const Vector& poi);
 

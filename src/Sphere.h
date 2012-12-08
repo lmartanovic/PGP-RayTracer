@@ -43,7 +43,7 @@ public:
     Return value is true if ray intersects with sphere and the intersection is
     closer than current t.
   */
-  bool intersect(Ray& ray, double& t);
+  int intersect(Ray& ray, double& t);
   //! Normal at given point computation
   /*!
     \param poi - Point of intersection at which the normal is needed

@@ -1,10 +1,10 @@
-- Complete Phong lighting ray-casting
+- Redo Plain primitive and primitive intersections
 - Redo Makefile
-- Object to delete its geometry?
-- Light (Point, Dir, Spot), Primitives (Sphere, Plane), Intersection
+- Light (Point, Dir, Spot), Intersection
 - Texture class (Procedural and noise(wood, marble, checkerboard, clouds, ...))
 - Add Texture component to Material
 - Refraction
+- Camera handling and projection plane
 - Adaptive Subsampling
   - if the same object, then compute directly from its attributes, else find
   - create more interesting scene once everything works

@@ -38,11 +38,11 @@ Plane::Plane(const Vector& n, const Vector& origin)
 }
 
 //! Intersection with given ray
-bool Plane::intersect(Ray& ray, double& t)
+int Plane::intersect(Ray& ray, double& t)
 {
   double np = dot(normal, ray.getDirection());
   if(np == 0)
-    return false;
+    return MISS;
 
   double t0 = (d + dot(normal, ray.getOrigin())) / np;
 
@@ -51,9 +51,10 @@ bool Plane::intersect(Ray& ray, double& t)
     if(t < 0.0 || t0 < t) //this is first tested object or closer then previous
     {
       t = t0;
-      return true;
+      return HIT;
     }
-  }else return false;
+  }
+  return MISS;
 }
 
 //! Normal accessor

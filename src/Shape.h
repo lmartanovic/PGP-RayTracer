@@ -26,11 +26,15 @@
 #include "Ray.h"
 #include "Vector.h"
 
+#define HIT 1
+#define MISS 0
+#define INPRIM -1
+
 class Shape
 {
 public:
   //! Intersection with given ray
-  virtual bool intersect(Ray& ray, double& t) = 0;
+  virtual int intersect(Ray& ray, double& t) = 0;
   //! Normal at given point of intersection computation
   virtual Vector getNormal(const Vector& poi) = 0;
 };

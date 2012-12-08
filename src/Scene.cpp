@@ -81,16 +81,17 @@ void Scene::setOutputImage(const sf::Image& img)
 }
 
 //! Main raytracing method
-Color Scene::trace(Ray & r, int depth)
+Color Scene::trace(Ray & r, double rIndex, int depth)
 {
   Color outColor;
   //check if ray intersects with geometry
   double t = -1;
+  int ip = MISS;
   Object* intersected = NULL; //intersected object holder
   //get nearest intersecting object
   for(vector<Object>::iterator o = objects.begin(); o != objects.end(); o++)
   {
-    if((*o).getShape()->intersect(r, t))
+    if((ip = (*o).getShape()->intersect(r, t)) != MISS)
     {
       intersected = &(*o);
     }
@@ -124,10 +125,27 @@ Color Scene::trace(Ray & r, int depth)
           //compute reflected ray
           R = r.getDirection() - 2.0*dot(r.getDirection(),N)*N;
           Ray rr = Ray(PoI + R*EPSILON, R);
-          outColor += reflected * intersected->getMaterial().getDiffuseColor()*trace(rr, depth+1);
+          outColor += reflected * intersected->getMaterial().getDiffuseColor()*trace(rr, rIndex, depth+1);
         }
         //compute refracted
-
+        double refracted = intersected->getMaterial().getRefractance();
+        if(refracted > 0.0 && depth < MAX_DEPTH)
+        {
+          //compute refracted ray
+          double refIndex = intersected->getMaterial().getRefractionIndex();
+          double n = rIndex/refIndex;
+          //N *= ip; //if inside the primitive - flip normal
+          double cosI = -dot(N, r.getDirection());
+          double cosT2 = 1.0 - n*n*(1.0-cosI*cosI);
+          if(cosT2 > 0.0)
+          {
+            //compute refracted ray
+            Vector T = (n*r.getDirection()) + (n*cosI - sqrtf(cosT2)) * N;
+            Ray refR = Ray(PoI + T*EPSILON, T);
+            outColor += refracted * trace(refR, refIndex, depth+1);
+          }
+          //N *= ip;
+        }
         //compute color at this level
         // get light vector
         L = -1*li;

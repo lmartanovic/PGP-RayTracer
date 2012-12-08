@@ -51,6 +51,13 @@ double Material::getRefractance()
 {
   return refractance;
 }
+
+//! Refraction index value accessor
+double Material::getRefractionIndex()
+{
+  return refractionIndex;
+}
+
 //! Shininess intensity accessor
 double Material::getShininess()
 {
@@ -86,6 +93,13 @@ void Material::setRefractance(double refr)
 {
   refractance = refr;
 }
+
+//! Refraction index setter
+void Material::setRefractionIndex(double refrI)
+{
+  refractionIndex = refrI;
+}
+
 //! Shininess intensity setter
 void Material::setShininess(double shin)
 {

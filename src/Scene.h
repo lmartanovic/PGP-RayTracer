@@ -31,7 +31,7 @@
 #include "Object.h"
 
 #define EPSILON 0.001
-#define MAX_DEPTH 2
+#define MAX_DEPTH 3
 
 class Scene
 {
@@ -59,9 +59,10 @@ public:
   //! Main raytracing method
   /*!
     @param r - traced ray
+    @param rIndex - current material refraction index
     @param depth - recursion depth
   */
-  Color trace(Ray & r, int depth);
+  Color trace(Ray & r, double rIndex, int depth);
   //! Shadow ray tracing
   bool inShadow(Ray & r, Object* o);
 private:

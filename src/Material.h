@@ -25,6 +25,9 @@
 
 #include "Color.h"
 
+#define REFRACTION_INDEX_AIR 1.0
+#define REFRACTION_INDEX_GLASS 1.492
+
 class Material
 {
 public:
@@ -41,6 +44,8 @@ public:
   double getReflectance();
   //! Refractance value accessor
   double getRefractance();
+  //! Refraction index getter
+  double getRefractionIndex();
   //! Shininess intensity accessor
   double getShininess();
   //! Diffuse intensity accessor
@@ -55,6 +60,8 @@ public:
   void setReflectance(double refl);
   //! Refractance factor setter
   void setRefractance(double refr);
+  //! Refraction index setter
+  void setRefractionIndex(double refrI);
   //!Shininess intensity setter
   void setShininess(double shin);
   //! Diffuse intensity setter
@@ -66,6 +73,7 @@ private:
   Color specularColor;  /*!< Specular color component */
   double reflectance;   /*!< Reflectance factor 0.0 - 1.0 */
   double refractance;   /*!< Refractance factor */
+  double refractionIndex; /*!< Material refraction index */
   double shininess;     /*!< Shininess intensity */
   double diffuseIntensity; /*!< Intensity of diffuse color */
 };
