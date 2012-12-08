@@ -54,23 +54,29 @@ int main()
   //create scene geometry
   Sphere s1(Vector(1.0, -0.8, 3.0), 2.5);
   Sphere s2(Vector(-5.5, -0.5, 7.0), 2.0);
-  Plane p1(Vector(0.0, 1.0, 0.0), Vector(0.0, -4.4, 0.0));
+  Plane p1(Vector(0.0, 1.0, 0.0), -4.4);
+  Plane p2(Vector(1.0, 0.0, 0.0), -15.0);
+  Plane p3(Vector(-1.0, 0.0, 0.0), -14.5);
+  Plane p4(Vector(0.0, 0.0, -1.0), -15.0);
+
   //create materials
   Material mat1;
   mat1.setDiffuseColor(Color(0.7, 0.7, 0.7));
   mat1.setSpecularColor(Color(0.7, 0.7, 0.7));
   mat1.setShininess(20.0);
-  mat1.setReflectance(0.6);
-  //mat1.setRefractance(0.8);
-  //mat1.setRefractionIndex(REFRACTION_INDEX_GLASS);
+  //mat1.setReflectance(0.6);
+  mat1.setRefractance(0.8);
+  mat1.setRefractionIndex(REFRACTION_INDEX_GLASS);
   Material mat2;
   mat2.setDiffuseColor(Color(0.7, 0.7, 1.0));
   mat2.setDiffuseIntensity(0.1);
   mat2.setSpecularColor(Color(0.7, 0.7, 0.7));
   mat2.setShininess(20.0);
   mat2.setReflectance(1.0);
+
   Material mat3;
   mat3.setDiffuseColor(Color(0.4, 0.3, 0.3));
+  //mat3.setAmbientColor(Color(0.1, 0.0, 0.0));
 
   //sphere1
   Object sp1;
@@ -84,6 +90,17 @@ int main()
   Object sp3;
   sp3.setShape(p1);
   sp3.setMaterial(mat3);
+  //side planes
+  Object sp4;
+  sp4.setShape(p2);
+  sp4.setMaterial(mat3);
+  Object sp5;
+  sp5.setShape(p3);
+  sp5.setMaterial(mat3);
+  //back plane
+  Object sp6;
+  sp6.setShape(p4);
+  sp6.setMaterial(mat3);
 
   //create lights
   Light light1;
@@ -98,6 +115,9 @@ int main()
   scene.addObject(sp1);
   scene.addObject(sp2);
   scene.addObject(sp3);
+  scene.addObject(sp4);
+  scene.addObject(sp5);
+  scene.addObject(sp6);
 
   scene.addLight(light1);
   scene.addLight(light2);

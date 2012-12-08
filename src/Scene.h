@@ -64,7 +64,7 @@ public:
   */
   Color trace(Ray & r, double rIndex, int depth);
   //! Shadow ray tracing
-  bool inShadow(Ray & r, Object* o);
+  bool inShadow(Ray & r, double length);
 private:
   std::vector<Light> lights;    /*!< List of all primary light sources */
   std::vector<Object> objects;  /*!< List of all renderable obects */

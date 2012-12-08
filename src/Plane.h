@@ -33,9 +33,9 @@ public:
   //! Priamry constructor
   /*!
     \param n - plane normal
-    \param origin - point of origin
+    \param distFromOrigin - distance from origin
   */
-  Plane(const Vector& n, const Vector& origin);
+  Plane(const Vector& n, double distFromOrigin);
 
   //! Intersection with given ray
   int intersect(Ray& ray, double& t);

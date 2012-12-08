@@ -1,4 +1,3 @@
-- Redo Plain primitive and primitive intersections
 - Redo Makefile
 - Light (Point, Dir, Spot), Intersection
 - Texture class (Procedural and noise(wood, marble, checkerboard, clouds, ...))
@@ -9,3 +8,4 @@
   - if the same object, then compute directly from its attributes, else find
   - create more interesting scene once everything works
 - Testing, measuring
+- SDL?

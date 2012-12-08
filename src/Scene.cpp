@@ -85,17 +85,21 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
 {
   Color outColor;
   //check if ray intersects with geometry
-  double t = -1;
+  //double t = -1;
+  double t = 1000000.0;
   int ip = MISS;
+  int u;
   Object* intersected = NULL; //intersected object holder
   //get nearest intersecting object
   for(vector<Object>::iterator o = objects.begin(); o != objects.end(); o++)
   {
-    if((ip = (*o).getShape()->intersect(r, t)) != MISS)
+    if((u = (*o).getShape()->intersect(r, t)))
     {
       intersected = &(*o);
+      ip = u;
     }
   }
+
   //get an intersection or store background color
   if(intersected == NULL) outColor += backgroundColor;
   else{
@@ -110,11 +114,12 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
     {
       //get a direction towards the light and set up shadow ray
       li = (*l).getPosition() - PoI;
+      double ln = li.length();
       li.normalize();
       ri.setOrigin(PoI + li*EPSILON);
       ri.setDirection(li);
       //check if occluded - if not, compute lights color contribution
-      if(!inShadow(ri, intersected))
+      if(!inShadow(ri, ln))
       {
         //compute normal
         N = intersected->getShape()->getNormal(PoI);
@@ -134,17 +139,17 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
           //compute refracted ray
           double refIndex = intersected->getMaterial().getRefractionIndex();
           double n = rIndex/refIndex;
-          //N *= ip; //if inside the primitive - flip normal
-          double cosI = -dot(N, r.getDirection());
+          //if inside the primitive - flip normal
+          Vector Norm = intersected->getShape()->getNormal(PoI) * (double)ip;
+          double cosI = -dot(Norm, r.getDirection());
           double cosT2 = 1.0 - n*n*(1.0-cosI*cosI);
           if(cosT2 > 0.0)
           {
             //compute refracted ray
-            Vector T = (n*r.getDirection()) + (n*cosI - sqrtf(cosT2)) * N;
+            Vector T = (n*r.getDirection()) + (n*cosI - sqrtf(cosT2)) * Norm;
             Ray refR = Ray(PoI + T*EPSILON, T);
             outColor += refracted * trace(refR, refIndex, depth+1);
           }
-          //N *= ip;
         }
         //compute color at this level
         // get light vector
@@ -177,19 +182,20 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
 }
 
 //! Shadow ray tracing
-bool Scene::inShadow(Ray & r, Object* o)
+bool Scene::inShadow(Ray & r, double length)
 {
-  double t = -1;
+  double t = length;
+  int result = MISS;
   //check for intersection with scene geometry
   for(vector<Object>::iterator j = objects.begin(); j != objects.end(); j++)
   {
-    if(&(*j) != o)
-    if((*j).getShape()->intersect(r, t))
+    if((result = (*j).getShape()->intersect(r, t)) != MISS)
     {
+      if(result != INPRIM)
       //stop search
       return true;
     }
   }
-  //if no intersection
+  //no occluder
   return false;
 }

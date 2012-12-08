@@ -29,29 +29,30 @@ Plane::Plane()
 }
 
 //! Primary constructor
-Plane::Plane(const Vector& n, const Vector& origin)
-: normal(n)
+Plane::Plane(const Vector& n, double distFromOrigin)
+: normal(n),
+  d(distFromOrigin)
 {
   normal *= -1;
   normal.normalize();
-  d = dot(normal, origin);
+  //d = dot(normal, origin);
 }
 
 //! Intersection with given ray
 int Plane::intersect(Ray& ray, double& t)
 {
   double np = dot(normal, ray.getDirection());
-  if(np == 0)
-    return MISS;
-
-  double t0 = (d + dot(normal, ray.getOrigin())) / np;
-
-  if(t0 > 0.01)
+  if(np != 0)
   {
-    if(t < 0.0 || t0 < t) //this is first tested object or closer then previous
+    double t0 = -(d + dot(normal, ray.getOrigin())) / np;
+
+    if(t0 > 0.0)
     {
-      t = t0;
-      return HIT;
+      if(t0 < t) //this is first tested object or closer then previous
+      {
+        t = t0;
+        return HIT;
+      }
     }
   }
   return MISS;
