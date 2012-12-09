@@ -16,9 +16,11 @@
  Basic Scene structure.
  Basic point lights.
  Phong lighting model.
- Shadowing
- Reflections
+ Shadowing.
+ Reflections.
  Refractions.
+ Basic Matrix transformations.
+ Basic lookAt camera and projection plane handling;
  (See TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------

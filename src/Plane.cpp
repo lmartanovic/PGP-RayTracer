@@ -35,7 +35,6 @@ Plane::Plane(const Vector& n, double distFromOrigin)
 {
   normal *= -1;
   normal.normalize();
-  //d = dot(normal, origin);
 }
 
 //! Intersection with given ray

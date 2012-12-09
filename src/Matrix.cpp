@@ -1,16 +1,16 @@
 /******************************************************************************
-* PGP Project - Ray Tracer with Adaptive Subsampling - Vector.cpp             *
+* PGP Project - Ray Tracer with Adaptive Subsampling - Vector.h               *
 *******************************************************************************
 * Contents                                                                    *
 * --------                                                                    *
-* - Sphere - Basic geometry primitive - sphere.                               *
+* - Matrix - class representing a 4x4 matrix.                                 *
 *                                                                             *
 *******************************************************************************
 * Author                                                                      *
 * ------                                                                      *
 * Lukáš Martanovič (xmarta00@stud.fit.vutbr.cz)                               *
 *                                                                             *
-* 27.10.2012                                                                  *
+* 09.12.2012                                                                  *
 *                                                                             *
 *******************************************************************************
 * This software is not copyrighted.                                           *
@@ -19,63 +19,55 @@
 * You may use, modify or distribute it freely.                                *
 *                                                                             *
 ******************************************************************************/
-#include "Sphere.h"
-#include <cmath>
+#include "Matrix.h"
 
-//! Basic constructor
-Sphere::Sphere()
-: c(0.0,0.0,0.0),
-  r(1.0)
-{}
-
-//! Primary constructor
-Sphere::Sphere(const Vector& center, double radius)
-: c(center),
-  r(radius)
-{}
-
-//! Intersection with given ray
-int Sphere::intersect(Ray& ray, double& t)
+//! Constructor
+Matrix::Matrix()
 {
-  //solve the quadratic equasion given by sphere and ray equasion
-  Vector dist = ray.getOrigin() - c;
-  double B = -dot(dist, ray.getDirection());
-  double D = B*B - dot(dist, dist) + r*r;
-  int ret = MISS;
-  //if there is no real solution (discriminant < 0) - no intersection exists
-  if(D > 0.0) //compute intersection points
-  {
-    D = sqrtf(D);
-    double t0 = B - D;
-    double t1 = B + D;
-    //if the first ip is in front
-    if(t1 > 0.0)
-    {
-      if(t0 < 0.0)
-      {
-        if(t1 < t)
-        {
-          t = t1;
-          ret = INPRIM;
-        }
-      }else{
-        if(t0 < t)
-        {
-          t = t0;
-          ret = HIT;
-        }
-      }
-    }
-  }
-
-  return ret;
+  //construct identity matrix
+  cell[1] = cell[2] = cell[3] = cell[4] = cell[6] = cell[7] =
+  cell[8] = cell[9] = cell[11] = cell[12] = cell[13] = cell[14] = 0;
+  //diagonal 1
+  cell[0] = cell[5] = cell[10] = cell[15] = 1;
 }
 
-//! Normal at given intersection point
-Vector Sphere::getNormal(const Vector& poi)
+//! Destructor
+Matrix::~Matrix()
 {
-  //compute vector from center to intersection point
-  Vector normal = c-poi;
-  //normalize it
-  return normal.normalize();;
+  //dtor
+}
+
+//! Matrix inversion
+void Matrix::invert()
+{
+  //auxiliary helper matrix
+  Matrix t;
+
+  double tx = -cell[3];
+  double ty = -cell[7];
+  double tz = -cell[11];
+  //invert into helper matrix top 3x3
+  for(int h = 0; h < 3; h++)
+  {
+    for(int v = 0; v < 3; v++)
+    {
+      t.cell[h + v * 4] = cell[v + h * 4];
+    }
+  }
+  //copy back
+  for(int i = 0; i < 11; i++)
+    cell[i] = t.cell[i];
+  //rightmost column
+  cell[3] = tx * cell[0] + ty * cell[1] + tz * cell[2];
+  cell[7] = tx * cell[4] + ty * cell[5] + tz * cell[6];
+  cell[11] = tx * cell[8] + ty * cell[9] + tz * cell[10];
+}
+
+//! Vector transformation
+Vector Matrix::transform(Vector & v)
+{
+  double x  = cell[0] * v.x + cell[1] * v.y + cell[2] * v.z + cell[3];
+	double y  = cell[4] * v.x + cell[5] * v.y + cell[6] * v.z + cell[7];
+	double z  = cell[8] * v.x + cell[9] * v.y + cell[10] * v.z + cell[11];
+  return Vector(x, y, z);
 }

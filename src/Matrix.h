@@ -1,16 +1,16 @@
 /******************************************************************************
-* PGP Project - Ray Tracer with Adaptive Subsampling - Vector.cpp             *
+* PGP Project - Ray Tracer with Adaptive Subsampling - Vector.h               *
 *******************************************************************************
 * Contents                                                                    *
 * --------                                                                    *
-* - Sphere - Basic geometry primitive - sphere.                               *
+* - Matrix - class representing a 4x4 matrix.                                 *
 *                                                                             *
 *******************************************************************************
 * Author                                                                      *
 * ------                                                                      *
 * Lukáš Martanovič (xmarta00@stud.fit.vutbr.cz)                               *
 *                                                                             *
-* 27.10.2012                                                                  *
+* 09.12.2012                                                                  *
 *                                                                             *
 *******************************************************************************
 * This software is not copyrighted.                                           *
@@ -19,63 +19,29 @@
 * You may use, modify or distribute it freely.                                *
 *                                                                             *
 ******************************************************************************/
-#include "Sphere.h"
-#include <cmath>
 
-//! Basic constructor
-Sphere::Sphere()
-: c(0.0,0.0,0.0),
-  r(1.0)
-{}
+#ifndef MATRIX_H
+#define MATRIX_H
 
-//! Primary constructor
-Sphere::Sphere(const Vector& center, double radius)
-: c(center),
-  r(radius)
-{}
+#include "Vector.h"
 
-//! Intersection with given ray
-int Sphere::intersect(Ray& ray, double& t)
+class Matrix
 {
-  //solve the quadratic equasion given by sphere and ray equasion
-  Vector dist = ray.getOrigin() - c;
-  double B = -dot(dist, ray.getDirection());
-  double D = B*B - dot(dist, dist) + r*r;
-  int ret = MISS;
-  //if there is no real solution (discriminant < 0) - no intersection exists
-  if(D > 0.0) //compute intersection points
-  {
-    D = sqrtf(D);
-    double t0 = B - D;
-    double t1 = B + D;
-    //if the first ip is in front
-    if(t1 > 0.0)
-    {
-      if(t0 < 0.0)
-      {
-        if(t1 < t)
-        {
-          t = t1;
-          ret = INPRIM;
-        }
-      }else{
-        if(t0 < t)
-        {
-          t = t0;
-          ret = HIT;
-        }
-      }
-    }
-  }
+public:
+  //! Constructor
+  Matrix();
+  //! Destructor
+  virtual ~Matrix();
 
-  return ret;
-}
+  //! Matrix inversion
+  void invert();
+  //! Vector transformation
+  /*!
+    @param v - Vector to be transformed
+  */
+  Vector transform(Vector & v);
 
-//! Normal at given intersection point
-Vector Sphere::getNormal(const Vector& poi)
-{
-  //compute vector from center to intersection point
-  Vector normal = c-poi;
-  //normalize it
-  return normal.normalize();;
-}
+  double cell[16];  /*!< Matrix cells. */
+};
+
+#endif // MATRIX_H

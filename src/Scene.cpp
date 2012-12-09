@@ -88,7 +88,7 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
   //double t = -1;
   double t = 1000000.0;
   int ip = MISS;
-  int u = -1;
+  int u;
   Object* intersected = NULL; //intersected object holder
   //get nearest intersecting object
   for(vector<Object>::iterator o = objects.begin(); o != objects.end(); o++)
@@ -103,8 +103,9 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
   //get an intersection or store background color
   if(intersected == NULL) outColor += backgroundColor;
   else{
+    Material & mat = intersected->getMaterial();
     //add ambient color
-    outColor += intersected->getMaterial().getAmbientColor();
+    outColor += mat.getAmbientColor();
     //get intersection point
     Vector PoI = r.getOrigin() + r.getDirection()*t;
     //check if intersection is not occluded from lights
@@ -130,8 +131,8 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
         //if any, add diffuse component
         if(dd > 0)
         {
-          outColor += intersected->getMaterial().getDiffuseColor()
-                        * intersected->getMaterial().getDiffuseIntensity()
+          outColor += mat.getDiffuseColor()
+                        * mat.getDiffuseIntensity()
                         * (*l).getDiffuseColor()
                         *dd;
         }
@@ -143,26 +144,26 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
         //if any, add specular component
         if(dd > 0)
         {
-          double spec = powf(dd,intersected->getMaterial().getShininess());
-          outColor += spec * intersected->getMaterial().getSpecularColor();
+          double spec = powf(dd,mat.getShininess());
+          outColor += spec * mat.getSpecularColor();
         }
       }
     }//for lights
-
-    double reflected = intersected->getMaterial().getReflectance();
+    //if there is reflectance - get reflected values
+    double reflected = mat.getReflectance();
     if(reflected > 0.0 && depth < MAX_DEPTH)
     {
       //compute reflected ray
       R = r.getDirection() - 2.0*dot(r.getDirection(),N)*N;
       Ray rr = Ray(PoI + R*EPSILON, R);
-      outColor += reflected * intersected->getMaterial().getDiffuseColor()*trace(rr, rIndex, depth+1);
+      outColor += reflected * mat.getDiffuseColor()*trace(rr, rIndex, depth+1);
     }
     //compute refracted
-    double refracted = intersected->getMaterial().getRefractance();
+    double refracted = mat.getRefractance();
     if(refracted > 0.0 && depth < MAX_DEPTH)
     {
       //compute refracted ray
-      double refIndex = intersected->getMaterial().getRefractionIndex();
+      double refIndex = mat.getRefractionIndex();
       //if inside the primitive - flip normal
       Vector Norm = intersected->getShape()->getNormal(PoI) * -1;//(double)ip;
       //if leaving primitive
@@ -196,7 +197,7 @@ bool Scene::inShadow(Ray & r, double length)
   //check for intersection with scene geometry
   for(vector<Object>::iterator j = objects.begin(); j != objects.end(); j++)
   {
-    if((result = (*j).getShape()->intersect(r, t)) != MISS)
+    if((result = (*j).getShape()->intersect(r, t)))
     {
       if(result != INPRIM)
       //stop search

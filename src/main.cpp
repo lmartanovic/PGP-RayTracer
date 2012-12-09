@@ -25,6 +25,7 @@
 
 #include "Color.h"
 #include "Light.h"
+#include "Matrix.h"
 #include "Object.h"
 #include "Plane.h"
 #include "Ray.h"
@@ -43,21 +44,54 @@ int main()
   sf::Image image;
   image.create(SCR_WIDTH, SCR_HEIGHT);
 
-  //set up the projection plane and camera
-  double m_SX, m_SY;
-  double m_WX1 = -4.5, m_WX2 = 3.5, m_WY1 = m_SY = -3, m_WY2 = 3;
-  double m_DX = (m_WX2 - m_WX1) / SCR_WIDTH; //velkost samplu - posun o zlomok px
-	double m_DY = (m_WY2 - m_WY1) / SCR_HEIGHT;
-
-  Vector cameraPos(-0.5, 0.0, -3.0);
+  //position to look at
+	Vector targetPos(0.0,0.0,0.0);
+	Vector desiredPos(0.0, 0.0, -3.0);
+  //camera position
+  Vector cameraPos(0.0, 0.0, -5.0);
+  //projection plane corners
+  Vector C0 = Vector(4.0, -3.0, 0.0);
+  Vector C1 = Vector(-4.0, -3.0, 0.0);
+  Vector C2 = Vector(4.0, 3.0, 0.0);
+  Vector C3 = Vector(-4.0, 3.0, 0.0);
+  //z-axis
+  Vector zAxis = targetPos - cameraPos;
+  zAxis.normalize();
+  //up vector
+  Vector up = Vector(0.0, 1.0, 0.0);
+  //x-axis - prependicular to z and up
+  Vector xAxis = cross(zAxis, up);
+  //y-axis - perpendicular to z and x
+  Vector yAxis = cross(zAxis, xAxis);
+  //transformation matrix
+  Matrix M;   //identity
+  //fill top left 3x3
+  M.cell[0] = xAxis.x, M.cell[1] = xAxis.y, M.cell[2] = xAxis.z;
+	M.cell[4] = yAxis.x, M.cell[5] = yAxis.y, M.cell[6] = yAxis.z;
+	M.cell[8] = zAxis.x, M.cell[9] = zAxis.y, M.cell[10] = zAxis.z;
+	//invert
+	M.invert();
+	//fill rightmost column
+	M.cell[3] = desiredPos.x, M.cell[7] = desiredPos.y, M.cell[11] = desiredPos.z;
+	//transform camera and projection plane
+  cameraPos = M.transform(cameraPos);
+  C0 = M.transform(C0);
+  C1 = M.transform(C1);
+  C2 = M.transform(C2);
+  C3 = M.transform(C3);
+  Vector m_DX = (C1 - C0) * (1.0/SCR_WIDTH);
+  Vector m_DY = (C3 - C1) * (1.0/SCR_HEIGHT);
+  Vector screenPos;
 
   //create scene geometry
-  Sphere s1(Vector(1.0, -0.8, 3.0), 2.5);
+  Sphere s1(Vector(3.5, -0.8, 3.0), 2.5);
   Sphere s2(Vector(-5.5, -0.5, 7.0), 2.0);
   Plane p1(Vector(0.0, 1.0, 0.0), -4.4);
   Plane p2(Vector(1.0, 0.0, 0.0), -15.0);
-  Plane p3(Vector(-1.0, 0.0, 0.0), -14.5);
+  Plane p3(Vector(-1.0, 0.0, 0.0), -15.0);
   Plane p4(Vector(0.0, 0.0, -1.0), -15.0);
+  Plane p5(Vector(0.0, 0.0, 1.0), -15.0);
+  Plane p6(Vector(0.0, -1.0, 0.0), -10.0);
 
   //create materials
   Material mat1;
@@ -77,6 +111,11 @@ int main()
   Material mat3;
   mat3.setDiffuseColor(Color(0.4, 0.3, 0.3));
   //mat3.setAmbientColor(Color(0.1, 0.0, 0.0));
+
+  Material mat4;
+  mat4.setDiffuseColor(Color(0.0, 1.0, 0.0));
+  mat4.setSpecularColor(Color(0.5, 1.0, 0.5));
+  mat4.setShininess(25.0);
 
   //sphere1
   Object sp1;
@@ -101,6 +140,14 @@ int main()
   Object sp6;
   sp6.setShape(p4);
   sp6.setMaterial(mat3);
+  //front plane
+  Object sp7;
+  sp7.setShape(p5);
+  sp7.setMaterial(mat3);
+  //topl plane
+  Object sp8;
+  sp8.setShape(p6);
+  sp8.setMaterial(mat3);
 
   //create lights
   Light light1;
@@ -118,17 +165,65 @@ int main()
   scene.addObject(sp4);
   scene.addObject(sp5);
   scene.addObject(sp6);
+  scene.addObject(sp7);
+  scene.addObject(sp8);
+  //grid of green balls
+  Object o[9];
+  Sphere s[9];
+  for(int x = 0; x < 3; x++)
+  {
+    for(int y = 0; y < 3; y++)
+    {
+      s[x*3+y] = Sphere(Vector(x+3, y, 6.5), 0.5);
+      o[x*3+y].setShape(s[x*3+y]);
+      o[x*3+y].setMaterial(mat4);
+      scene.addObject(o[x*3+y]);
+    }
+  }
 
   scene.addLight(light1);
   scene.addLight(light2);
   scene.setOutputImage(image);
 
-  for(int y = SCR_HEIGHT -1 ; y >= 0; y--)
+/*
+  Color** result = new Color*[SCR_HEIGHT];
+  for(int i = 0; i < SCR_HEIGHT; i++)
   {
-    m_SX = m_WX1;
+    result[i] = new Color[SCR_WIDTH];
+  }
+
+  Color outColor = Color(1.0, 1.0, 1.0);
+  for(int y = 0; y < SCR_HEIGHT; y += 4)
+  {
+    for(int x = 0; x < SCR_WIDTH; x += 4)
+    {
+      result[y][x] = outColor;
+    }
+  }
+
+  for(int y = 0; y < SCR_HEIGHT; y ++)
+  {
     for(int x = 0; x < SCR_WIDTH; x++)
     {
-      Vector dir = Vector(m_SX, m_SY, 0.0) - cameraPos; //projekcne platno zarovno s xy (kolme na z os)
+      sf::Color col(result[y][x].r*255,
+                    result[y][x].g*255,
+                    result[y][x].b*255);
+      image.setPixel(x,y,col);
+    }
+  }
+
+  for(int i = 0; i < SCR_HEIGHT; i++)
+  {
+    delete[] result[i];
+  }
+  delete[] result;*/
+
+  for(int y = 0; y < SCR_HEIGHT; y++)
+  {
+    screenPos = C0 + (double)y*m_DY;
+    for(int x = 0; x < SCR_WIDTH; x++)
+    {
+      Vector dir = screenPos - cameraPos;
       dir.normalize();
       Ray r = Ray(cameraPos, dir);
       int depth = 0;
@@ -138,9 +233,8 @@ int main()
                     finalColor.g*255,
                     finalColor.b*255);
       image.setPixel(x,y,col);
-      m_SX += m_DX;
+      screenPos += m_DX;
     }
-    m_SY += m_DY;
   }
   image.saveToFile("result.png");
   return 0;
