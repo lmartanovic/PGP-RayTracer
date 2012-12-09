@@ -1,7 +1,3 @@
-- Intersection if needed for AS
-- Adaptive Subsampling
-  - Color array
-  - create more interesting scene once everything works
 - Texture class (Procedural and noise(wood, marble, checkerboard, clouds, ...))
 - Add Texture component to Material
 - Redo Makefile
