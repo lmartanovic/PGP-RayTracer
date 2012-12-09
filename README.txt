@@ -9,16 +9,16 @@
  version). It's development is a part of a course project for PGP course at BUT
  Brno.
 
- Vector and Ray classes implemented.
- Basic Color and Material representation implemented.
- Basic primitive abstraction and Sphere primitive implemented.
- Basic renderable object class (Geometry(Shape) + Material) implemented
- Plane primitive added.
- Basic Scene structure added;
- Basic point light added;
- Base of Phong lighting model set up.
+ Vector and Ray classes.
+ Basic Color and Material representation.
+ Basic primitive abstraction
+ Spherical and planar primitives.
+ Basic Scene structure.
+ Basic point lights.
+ Phong lighting model.
  Shadowing
  Reflections
+ Refractions.
  (See TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------

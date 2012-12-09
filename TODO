@@ -2,7 +2,6 @@
 - Light (Point, Dir, Spot), Intersection
 - Texture class (Procedural and noise(wood, marble, checkerboard, clouds, ...))
 - Add Texture component to Material
-- Refraction
 - Camera handling and projection plane
 - Adaptive Subsampling
   - if the same object, then compute directly from its attributes, else find
