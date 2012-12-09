@@ -168,16 +168,16 @@ int main()
   scene.addObject(sp7);
   scene.addObject(sp8);
   //grid of green balls
-  Object o[9];
-  Sphere s[9];
-  for(int x = 0; x < 3; x++)
+  Object o[16];
+  Sphere s[16];
+  for(int x = 0; x < 4; x++)
   {
-    for(int y = 0; y < 3; y++)
+    for(int y = 0; y < 4; y++)
     {
-      s[x*3+y] = Sphere(Vector(x+3, y, 6.5), 0.5);
-      o[x*3+y].setShape(s[x*3+y]);
-      o[x*3+y].setMaterial(mat4);
-      scene.addObject(o[x*3+y]);
+      s[x*4+y] = Sphere(Vector(x+3, y, 14), 0.4);
+      o[x*4+y].setShape(s[x*4+y]);
+      o[x*4+y].setMaterial(mat4);
+      scene.addObject(o[x*4+y]);
     }
   }
 
