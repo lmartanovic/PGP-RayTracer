@@ -67,7 +67,11 @@ int Sphere::intersect(Ray& ray, double& t)
       }
     }
   }
-  return ret;
+  if(ret == -1)
+  {
+    //std::cout << "hit from within ";
+    return -1;
+  }else return ret;
 }
 
 //! Normal at given intersection point

@@ -64,8 +64,8 @@ int main()
   mat1.setDiffuseColor(Color(0.7, 0.7, 0.7));
   mat1.setSpecularColor(Color(0.7, 0.7, 0.7));
   mat1.setShininess(20.0);
-  //mat1.setReflectance(0.6);
-  mat1.setRefractance(0.8);
+  mat1.setReflectance(0.0);
+  mat1.setRefractance(1.0);
   mat1.setRefractionIndex(REFRACTION_INDEX_GLASS);
   Material mat2;
   mat2.setDiffuseColor(Color(0.7, 0.7, 1.0));
@@ -131,7 +131,8 @@ int main()
       Vector dir = Vector(m_SX, m_SY, 0.0) - cameraPos; //projekcne platno zarovno s xy (kolme na z os)
       dir.normalize();
       Ray r = Ray(cameraPos, dir);
-      Color finalColor = scene.trace(r, REFRACTION_INDEX_AIR, 0);
+      int depth = 0;
+      Color finalColor = scene.trace(r, REFRACTION_INDEX_AIR, depth);
 
       sf::Color col(finalColor.r*255,
                     finalColor.g*255,

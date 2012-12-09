@@ -88,18 +88,18 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
   //double t = -1;
   double t = 1000000.0;
   int ip = MISS;
-  int u;
+  int u = -1;
   Object* intersected = NULL; //intersected object holder
   //get nearest intersecting object
   for(vector<Object>::iterator o = objects.begin(); o != objects.end(); o++)
   {
-    if((u = (*o).getShape()->intersect(r, t)))
+    u = (*o).getShape()->intersect(r, t);
+    if(u != MISS)
     {
       intersected = &(*o);
       ip = u;
     }
   }
-
   //get an intersection or store background color
   if(intersected == NULL) outColor += backgroundColor;
   else{
@@ -124,33 +124,6 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
         //compute normal
         N = intersected->getShape()->getNormal(PoI);
         //if there is reflectance - get reflected values
-        double reflected = intersected->getMaterial().getReflectance();
-        if(reflected > 0.0 && depth < MAX_DEPTH)
-        {
-          //compute reflected ray
-          R = r.getDirection() - 2.0*dot(r.getDirection(),N)*N;
-          Ray rr = Ray(PoI + R*EPSILON, R);
-          outColor += reflected * intersected->getMaterial().getDiffuseColor()*trace(rr, rIndex, depth+1);
-        }
-        //compute refracted
-        double refracted = intersected->getMaterial().getRefractance();
-        if(refracted > 0.0 && depth < MAX_DEPTH)
-        {
-          //compute refracted ray
-          double refIndex = intersected->getMaterial().getRefractionIndex();
-          double n = rIndex/refIndex;
-          //if inside the primitive - flip normal
-          Vector Norm = intersected->getShape()->getNormal(PoI) * (double)ip;
-          double cosI = -dot(Norm, r.getDirection());
-          double cosT2 = 1.0 - n*n*(1.0-cosI*cosI);
-          if(cosT2 > 0.0)
-          {
-            //compute refracted ray
-            Vector T = (n*r.getDirection()) + (n*cosI - sqrtf(cosT2)) * Norm;
-            Ray refR = Ray(PoI + T*EPSILON, T);
-            outColor += refracted * trace(refR, refIndex, depth+1);
-          }
-        }
         //compute color at this level
         // get light vector
         L = -1*li;
@@ -177,6 +150,42 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
         }
       }
     }//for lights
+
+    double reflected = intersected->getMaterial().getReflectance();
+    if(reflected > 0.0 && depth < MAX_DEPTH)
+    {
+      //compute reflected ray
+      R = r.getDirection() - 2.0*dot(r.getDirection(),N)*N;
+      Ray rr = Ray(PoI + R*EPSILON, R);
+      outColor += reflected * intersected->getMaterial().getDiffuseColor()*trace(rr, rIndex, depth+1);
+    }
+    //compute refracted
+    double refracted = intersected->getMaterial().getRefractance();
+    if(refracted > 0.0 && depth < MAX_DEPTH)
+    {
+      //compute refracted ray
+      double refIndex = intersected->getMaterial().getRefractionIndex();
+      //if inside the primitive - flip normal
+      Vector Norm = intersected->getShape()->getNormal(PoI) * -1;//(double)ip;
+      //if leaving primitive
+      if(ip == INPRIM)
+      {
+        //use original normal
+        Norm *= -1;
+        //out material is air again
+        refIndex = REFRACTION_INDEX_AIR;
+      }
+      double n = rIndex/refIndex;
+      double cosI = -dot(Norm, r.getDirection());
+      double cosT2 = 1.0 - n*n*(1.0-cosI*cosI);
+      if(cosT2 > 0.0)
+      {
+        //compute refracted ray
+        Vector T = (n*r.getDirection()) + (n*cosI - sqrtf(cosT2)) * Norm;
+        Ray refR = Ray(PoI + T*EPSILON, T);
+        outColor += refracted * trace(refR, refIndex, depth+1);
+      }
+    }
   }
   return outColor;
 }
