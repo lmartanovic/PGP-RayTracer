@@ -81,14 +81,16 @@ void Scene::setOutputImage(const sf::Image& img)
 }
 
 //! Main raytracing method
-Color Scene::trace(Ray & r, double rIndex, int depth)
+Sample Scene::trace(Ray & r, double rIndex, int depth)
 {
   Color outColor;
   //check if ray intersects with geometry
-  //double t = -1;
   double t = 1000000.0;
   int ip = MISS;
   int u;
+  int lightCount = 0;
+  double dd = 0.0;
+  double ss = 0.0;
   Object* intersected = NULL; //intersected object holder
   //get nearest intersecting object
   for(vector<Object>::iterator o = objects.begin(); o != objects.end(); o++)
@@ -122,12 +124,13 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
       //check if occluded - if not, compute lights color contribution
       if(!inShadow(ri, ln))
       {
+        lightCount++;
         //compute normal
         N = intersected->getShape()->getNormal(PoI);
         // get light vector
         L = -1*li;
         //lightness level
-        double dd = dot(N,L);
+        dd = dot(N,L);
         //if any, add diffuse component
         if(dd > 0)
         {
@@ -140,11 +143,11 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
         V = -1*r.getDirection();
         R = L - 2.0*dot(L,N) * N;
         //compute shininess
-        dd = dot(V,R);
+        ss = dot(V,R);
         //if any, add specular component
-        if(dd > 0)
+        if(ss > 0)
         {
-          double spec = powf(dd,mat.getShininess());
+          double spec = powf(ss,mat.getShininess());
           outColor += spec * mat.getSpecularColor();
         }
       }
@@ -156,7 +159,7 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
       //compute reflected ray
       R = r.getDirection() - 2.0*dot(r.getDirection(),N)*N;
       Ray rr = Ray(PoI + R*EPSILON, R);
-      outColor += reflected * mat.getDiffuseColor()*trace(rr, rIndex, depth+1);
+      outColor += reflected * mat.getDiffuseColor()*trace(rr, rIndex, depth+1).c;
     }
     //compute refracted
     double refracted = mat.getRefractance();
@@ -182,11 +185,19 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
         //compute refracted ray
         Vector T = (n*r.getDirection()) + (n*cosI - sqrtf(cosT2)) * Norm;
         Ray refR = Ray(PoI + T*EPSILON, T);
-        outColor += refracted * trace(refR, refIndex, depth+1);
+        outColor += refracted * trace(refR, refIndex, depth+1).c;
       }
     }
   }
-  return outColor;
+  //output
+  Sample s;
+  s.o = intersected;
+  s.c = outColor;
+  s.l = lightCount;
+  s.di = dd;
+  s.si = ss;
+  return s;
+  //return outColor;
 }
 
 //! Shadow ray tracing

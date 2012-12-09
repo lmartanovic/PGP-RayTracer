@@ -75,4 +75,10 @@ inline Color operator*(const Color& c, double k)
   return Color(k * c.r, k * c.g, k * c.b);
 }
 
+//! Non-equality operator
+inline bool operator!=(const Color& c1, const Color& c2)
+{
+  return ((c1.r == c2.r) && (c1.g == c2.g) && (c1.b == c2.b));
+}
+
 #endif // COLOR_H

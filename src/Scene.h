@@ -33,6 +33,14 @@
 #define EPSILON 0.001
 #define MAX_DEPTH 3
 
+typedef struct {
+  Object* o;  //first hit object
+  Color c;    //color
+  int l;
+  double di;
+  double si;
+} Sample;
+
 class Scene
 {
 public:
@@ -62,7 +70,7 @@ public:
     @param rIndex - current material refraction index
     @param depth - recursion depth
   */
-  Color trace(Ray & r, double rIndex, int depth);
+  Sample trace(Ray & r, double rIndex, int depth);
   //! Shadow ray tracing
   bool inShadow(Ray & r, double length);
 private:
