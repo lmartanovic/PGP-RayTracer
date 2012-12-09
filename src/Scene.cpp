@@ -123,8 +123,6 @@ Color Scene::trace(Ray & r, double rIndex, int depth)
       {
         //compute normal
         N = intersected->getShape()->getNormal(PoI);
-        //if there is reflectance - get reflected values
-        //compute color at this level
         // get light vector
         L = -1*li;
         //lightness level
