@@ -134,10 +134,13 @@ Sample Scene::trace(Ray & r, double rIndex, int depth)
         //if any, add diffuse component
         if(dd > 0)
         {
-          outColor += mat.getDiffuseColor()
-                        * mat.getDiffuseIntensity()
-                        * (*l).getDiffuseColor()
-                        *dd;
+          Color matColor;
+          if(mat.hasTexture())
+            matColor = mat.getTextureColor(PoI);
+          else matColor = mat.getDiffuseColor();
+          outColor += matColor * mat.getDiffuseIntensity()
+                               * (*l).getDiffuseColor()
+                               *dd;
         }
         //get View vector
         V = -1*r.getDirection();

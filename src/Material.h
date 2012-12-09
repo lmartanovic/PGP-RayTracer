@@ -24,6 +24,7 @@
 #define MATERIAL_H
 
 #include "Color.h"
+#include "Texture.h"
 
 #define REFRACTION_INDEX_AIR 1.0
 #define REFRACTION_INDEX_GLASS 1.492
@@ -40,6 +41,8 @@ public:
   Color& getDiffuseColor();
   //! Specular color component accessor
   Color& getSpecularColor();
+  //! Texture accessor
+  Color getTextureColor(Vector & poi);
   //! Reflectance value accessor
   double getReflectance();
   //! Refractance value accessor
@@ -50,6 +53,8 @@ public:
   double getShininess();
   //! Diffuse intensity accessor
   double getDiffuseIntensity();
+  //! Texture checker
+  bool hasTexture();
   //! Ambient color component setter
   void setAmbientColor(const Color& col);
   //! Diffuse color component setter
@@ -62,15 +67,19 @@ public:
   void setRefractance(double refr);
   //! Refraction index setter
   void setRefractionIndex(double refrI);
-  //!Shininess intensity setter
+  //! Shininess intensity setter
   void setShininess(double shin);
+  //! Texture setter
+  void setTexture(const Texture& text);
   //! Diffuse intensity setter
   void setDiffuseIntensity(double intens);
 
 private:
+  bool tex;             /*!< Texture indicator. */
   Color ambientColor;   /*!< Ambient color component */
   Color diffuseColor;   /*!< Diffuse color component */
   Color specularColor;  /*!< Specular color component */
+  Texture texture;      /*!< Procedural texture */
   double reflectance;   /*!< Reflectance factor 0.0 - 1.0 */
   double refractance;   /*!< Refractance factor */
   double refractionIndex; /*!< Material refraction index */

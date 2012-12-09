@@ -23,7 +23,8 @@
 #include "Material.h"
 
 Material::Material()
-: diffuseIntensity(1.0)
+: tex(false),
+  diffuseIntensity(1.0)
 {}
 
 //! Ambient color component accessor
@@ -40,6 +41,11 @@ Color& Material::getDiffuseColor()
 Color& Material::getSpecularColor()
 {
   return specularColor;
+}
+//! Texture accessor
+Color Material::getTextureColor(Vector & poi)
+{
+  return texture.getValue(poi);
 }
 //! Reflectance value accessor
 double Material::getReflectance()
@@ -67,6 +73,11 @@ double Material::getShininess()
 double Material::getDiffuseIntensity()
 {
   return diffuseIntensity;
+}
+//! Texture indicator
+bool Material::hasTexture()
+{
+  return tex;
 }
 //! Ambient color component setter
 void Material::setAmbientColor(const Color& col)
@@ -105,7 +116,12 @@ void Material::setShininess(double shin)
 {
   shininess = shin;
 }
-
+//! Procedural texture setter
+void Material::setTexture(const Texture& text)
+{
+  texture = text;
+  tex = true;
+}
 //! Diffuse intensity setter
 void Material::setDiffuseIntensity(double intens)
 {

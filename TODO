@@ -1,5 +1,3 @@
-- Texture class (Procedural and noise(wood, marble, checkerboard, clouds, ...))
-- Add Texture component to Material
 - Redo Makefile
 - SDL?
 - Testing, measuring

@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 #include "Color.h"
 #include "Light.h"
@@ -41,6 +42,8 @@
 using namespace std;
 
 //globals originally from main
+//output image
+sf::Image image;
 //position to look at
 Vector targetPos(0.0,0.0,0.0);
 Vector desiredPos(0.0, 0.0, -3.0);
@@ -53,6 +56,61 @@ Vector C2 = Vector(4.0, 3.0, 0.0);
 Vector C3 = Vector(-4.0, 3.0, 0.0);
 Vector m_DX, m_DY, screenPos;
 Scene scene;
+
+bool checkArgs(int argc, char* argv[], bool & as, int & delta)
+{
+  int arg;
+  if(argc == 1)
+  {
+    as = false;
+    return true;
+  }else if(argc == 3)
+  {
+    if(strcmp(argv[1], "-as") == 0)
+    {
+      as = true;
+      if(sscanf(argv[2], "%d", &arg) == 1)
+      {
+        delta = arg;
+        return true;
+      }else return false;
+    }
+  }
+
+  return false;
+}
+
+void initCamera()
+{
+  image.create(SCR_WIDTH, SCR_HEIGHT);
+  //z-axis
+  Vector zAxis = targetPos - cameraPos;
+  zAxis.normalize();
+  //up vector
+  Vector up = Vector(0.0, 1.0, 0.0);
+  //x-axis - prependicular to z and up
+  Vector xAxis = cross(zAxis, up);
+  //y-axis - perpendicular to z and x
+  Vector yAxis = cross(zAxis, xAxis);
+  //transformation matrix
+  Matrix M;   //identity
+  //fill top left 3x3
+  M.cell[0] = xAxis.x, M.cell[1] = xAxis.y, M.cell[2] = xAxis.z;
+	M.cell[4] = yAxis.x, M.cell[5] = yAxis.y, M.cell[6] = yAxis.z;
+	M.cell[8] = zAxis.x, M.cell[9] = zAxis.y, M.cell[10] = zAxis.z;
+	//invert
+	M.invert();
+	//fill rightmost column
+	M.cell[3] = desiredPos.x, M.cell[7] = desiredPos.y, M.cell[11] = desiredPos.z;
+	//transform camera and projection plane
+  cameraPos = M.transform(cameraPos);
+  C0 = M.transform(C0);
+  C1 = M.transform(C1);
+  C2 = M.transform(C2);
+  C3 = M.transform(C3);
+  m_DX = (C1 - C0) * (1.0/SCR_WIDTH);
+  m_DY = (C3 - C1) * (1.0/SCR_HEIGHT);
+}
 
 //bilinear color interpolation
 void interpolateColor(Color** image, Sample* corners, int x, int y, int xx, int yy)
@@ -125,8 +183,6 @@ bool cornersGoodEnough(Sample* corners)
 //adaptive subsampling
 void sample(Color** image, int sampleDelta, int tx, int ty, int bx, int by)
 {
-  static const Color outColor = Color(1.0, 1.0, 1.0);
-  //on single pixel level just store the color
   int xOffset = sampleDelta;
   int yOffset = sampleDelta;
 
@@ -201,39 +257,19 @@ void sample(Color** image, int sampleDelta, int tx, int ty, int bx, int by)
 //=============================================================================
 int main(int argc, char* argv[])
 {
-  bool as = true;
-  sf::Image image;
-  image.create(SCR_WIDTH, SCR_HEIGHT);
+  bool as;
+  int delta;
+  //check command line
+  bool err = checkArgs(argc, argv, as, delta);
+  if(!err)
+  {
+    cerr << "ERROR" << endl;
+    return 0;
+  }
+  //set up camera
+  initCamera();
 
-  //z-axis
-  Vector zAxis = targetPos - cameraPos;
-  zAxis.normalize();
-  //up vector
-  Vector up = Vector(0.0, 1.0, 0.0);
-  //x-axis - prependicular to z and up
-  Vector xAxis = cross(zAxis, up);
-  //y-axis - perpendicular to z and x
-  Vector yAxis = cross(zAxis, xAxis);
-  //transformation matrix
-  Matrix M;   //identity
-  //fill top left 3x3
-  M.cell[0] = xAxis.x, M.cell[1] = xAxis.y, M.cell[2] = xAxis.z;
-	M.cell[4] = yAxis.x, M.cell[5] = yAxis.y, M.cell[6] = yAxis.z;
-	M.cell[8] = zAxis.x, M.cell[9] = zAxis.y, M.cell[10] = zAxis.z;
-	//invert
-	M.invert();
-	//fill rightmost column
-	M.cell[3] = desiredPos.x, M.cell[7] = desiredPos.y, M.cell[11] = desiredPos.z;
-	//transform camera and projection plane
-  cameraPos = M.transform(cameraPos);
-  C0 = M.transform(C0);
-  C1 = M.transform(C1);
-  C2 = M.transform(C2);
-  C3 = M.transform(C3);
-  m_DX = (C1 - C0) * (1.0/SCR_WIDTH);
-  m_DY = (C3 - C1) * (1.0/SCR_HEIGHT);
-//  screenPos;
-
+  //set up scene
   //create scene geometry
   Sphere s1(Vector(3.5, -0.8, 3.0), 2.5);
   Sphere s2(Vector(-5.5, -0.5, 7.0), 2.0);
@@ -261,12 +297,15 @@ int main(int argc, char* argv[])
 
   Material mat3;
   mat3.setDiffuseColor(Color(0.4, 0.3, 0.3));
-  //mat3.setAmbientColor(Color(0.1, 0.0, 0.0));
 
   Material mat4;
   mat4.setDiffuseColor(Color(0.0, 1.0, 0.0));
   mat4.setSpecularColor(Color(0.5, 1.0, 0.5));
   mat4.setShininess(25.0);
+
+  Texture tex1(TextureType::Turbulence, Color(0.4, 0.3, 0.3), Color(0.7, 0.7, 0.7));
+  Material mat5;
+  mat5.setTexture(tex1);
 
   //sphere1
   Object sp1;
@@ -290,7 +329,7 @@ int main(int argc, char* argv[])
   //back plane
   Object sp6;
   sp6.setShape(p4);
-  sp6.setMaterial(mat3);
+  sp6.setMaterial(mat5);
   //front plane
   Object sp7;
   sp7.setShape(p5);
@@ -336,7 +375,7 @@ int main(int argc, char* argv[])
   scene.addLight(light2);
   scene.setOutputImage(image);
 
-
+  //tracing itself
   Color** result = new Color*[SCR_HEIGHT];
   for(int i = 0; i < SCR_HEIGHT; i++)
   {

@@ -22,6 +22,7 @@
  Basic Matrix transformations.
  Basic lookAt camera and projection plane handling;
  Adaptive Subsampling.
+ Basic procedural textures.
  (See TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------
