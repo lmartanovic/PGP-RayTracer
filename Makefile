@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -pedantic -O
+CFLAGS=-Wall -pedantic -O2
 LIBS=-lm
 BIN=RayTracer
 SRC=./src
