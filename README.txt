@@ -2,7 +2,7 @@
  PGP - Ray Tracer with Adaptive Subsampling
 ===============================================================================
  author:  Lukáš Martanovič - xmarta00@stud.fit.vutbr.cz
- date:    09.12.2012
+ date:    11.12.2012
 
 -------------------------------------------------------------------------------
  This is a simple ray tracer with adaptive subsampling acceleration(very early
