@@ -24,7 +24,7 @@
  Adaptive Subsampling.
  Basic procedural textures.
  BMP export.
- (See TODO for rough prject roadmap).
+ (See TODO for rough prject roadmap.)
 
 -------------------------------------------------------------------------------
  This software is not copyrighted.
