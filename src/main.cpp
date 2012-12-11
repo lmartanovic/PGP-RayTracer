@@ -23,7 +23,9 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <cstdio>
 
+#include "BmpExport.h"
 #include "Color.h"
 #include "Light.h"
 #include "Matrix.h"
@@ -33,17 +35,12 @@
 #include "Scene.h"
 #include "Sphere.h"
 #include "Vector.h"
-#include <SFML/Graphics.hpp>
 
-#define SCR_WIDTH 800
-#define SCR_HEIGHT 600
-#define AS_DELTA 32
+#define INTENSITY_DIFF_TOLERANCE 0.05
 
 using namespace std;
 
 //globals originally from main
-//output image
-sf::Image image;
 //position to look at
 Vector targetPos(0.0,0.0,0.0);
 Vector desiredPos(0.0, 0.0, -3.0);
@@ -82,7 +79,6 @@ bool checkArgs(int argc, char* argv[], bool & as, int & delta)
 
 void initCamera()
 {
-  image.create(SCR_WIDTH, SCR_HEIGHT);
   //z-axis
   Vector zAxis = targetPos - cameraPos;
   zAxis.normalize();
@@ -163,16 +159,16 @@ bool cornersGoodEnough(Sample* corners)
   }
 
   //are diffuse intensities similar?
-  if(((corners[0].di - corners[3].di) > 0.05) ||
-    ((corners[1].di - corners[2].di) > 0.05) ||
-    ((corners[0].di - corners[1].di) > 0.05))
+  if(((corners[0].di - corners[3].di) > INTENSITY_DIFF_TOLERANCE) ||
+    ((corners[1].di - corners[2].di) > INTENSITY_DIFF_TOLERANCE) ||
+    ((corners[0].di - corners[1].di) > INTENSITY_DIFF_TOLERANCE))
   {
     return false;
   }
   //are specular intensities similar?
-  if(((corners[0].si - corners[3].si) > 0.05) ||
-    ((corners[1].si - corners[2].si) > 0.05) ||
-    ((corners[0].si - corners[1].si) > 0.05))
+  if(((corners[0].si - corners[3].si) > INTENSITY_DIFF_TOLERANCE) ||
+    ((corners[1].si - corners[2].si) > INTENSITY_DIFF_TOLERANCE) ||
+    ((corners[0].si - corners[1].si) > INTENSITY_DIFF_TOLERANCE))
   {
     return false;
   }
@@ -183,6 +179,7 @@ bool cornersGoodEnough(Sample* corners)
 //adaptive subsampling
 void sample(Color** image, int sampleDelta, int tx, int ty, int bx, int by)
 {
+  //static Color outColor = Color(1.0, 1.0, 1.0);
   int xOffset = sampleDelta;
   int yOffset = sampleDelta;
 
@@ -303,7 +300,7 @@ int main(int argc, char* argv[])
   mat4.setSpecularColor(Color(0.5, 1.0, 0.5));
   mat4.setShininess(25.0);
 
-  Texture tex1(TextureType::Turbulence, Color(0.4, 0.3, 0.3), Color(0.7, 0.7, 0.7));
+  Texture tex1(Turbulence, Color(0.4, 0.3, 0.3), Color(0.7, 0.7, 0.7));
   Material mat5;
   mat5.setTexture(tex1);
 
@@ -329,7 +326,7 @@ int main(int argc, char* argv[])
   //back plane
   Object sp6;
   sp6.setShape(p4);
-  sp6.setMaterial(mat5);
+  sp6.setMaterial(mat3);
   //front plane
   Object sp7;
   sp7.setShape(p5);
@@ -337,7 +334,7 @@ int main(int argc, char* argv[])
   //topl plane
   Object sp8;
   sp8.setShape(p6);
-  sp8.setMaterial(mat3);
+  sp8.setMaterial(mat5);
 
   //create lights
   Light light1;
@@ -373,7 +370,6 @@ int main(int argc, char* argv[])
 
   scene.addLight(light1);
   scene.addLight(light2);
-  scene.setOutputImage(image);
 
   //tracing itself
   Color** result = new Color*[SCR_HEIGHT];
@@ -385,7 +381,7 @@ int main(int argc, char* argv[])
   //we want adaptive subsampling
   if(as)
   {
-    sample(result, AS_DELTA, 0, 0, SCR_WIDTH, SCR_HEIGHT);
+    sample(result, delta, 0, 0, SCR_WIDTH, SCR_HEIGHT);
   }else{
     //brute force
     for(int y = 0; y < SCR_HEIGHT; y++)
@@ -403,18 +399,8 @@ int main(int argc, char* argv[])
     }
   }
 
-  //store the image
-  for(int y = 0; y < SCR_HEIGHT; y ++)
-  {
-    for(int x = 0; x < SCR_WIDTH; x++)
-    {
-      sf::Color col(result[y][x].r*255,
-                    result[y][x].g*255,
-                    result[y][x].b*255);
-      image.setPixel(x,y,col);
-    }
-  }
-  image.saveToFile("result.png");
+  //store result
+  exportBmp(result);
 
   //clean up
   for(int i = 0; i < SCR_HEIGHT; i++)

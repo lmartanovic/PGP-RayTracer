@@ -74,12 +74,6 @@ void Scene::setBackgroundColor(const Color& col)
   backgroundColor = col;
 }
 
-//! Output image setter
-void Scene::setOutputImage(const sf::Image& img)
-{
-  outputImg = img;
-}
-
 //! Main raytracing method
 Sample Scene::trace(Ray & r, double rIndex, int depth)
 {

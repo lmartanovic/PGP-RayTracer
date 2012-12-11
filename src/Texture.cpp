@@ -106,29 +106,34 @@ double grad(int hash, double x, double y, double z)
 double noise(double x, double y, double z)
 {
   Perlin & myPerlin = Perlin::getInstance();
-  int X = (int)floor(x) & 255, // FIND UNIT CUBE THAT
-      Y = (int)floor(y) & 255, // CONTAINS POINT.
+  //find cube containing sampled point
+  int X = (int)floor(x) & 255,
+      Y = (int)floor(y) & 255,
       Z = (int)floor(z) & 255;
-  x -= floor(x);                   // FIND RELATIVE X,Y,Z
-  y -= floor(y);                   // OF POINT IN CUBE.
+  //get relative coordinates
+  x -= floor(x);
+  y -= floor(y);
   z -= floor(z);
-  double u = fade(x),              // COMPUTE FADE CURVES
-         v = fade(y),              // FOR EACH OF X,Y,Z.
+  //compute fade curves
+  double u = fade(x),
+         v = fade(y),
          w = fade(z);
-  int A = myPerlin.p[X]+Y,    // HASH COORDINATES OF
-      AA = myPerlin.p[A]+Z,   // THE 8 CUBE CORNERS,
+  //hash coordinates
+  int A = myPerlin.p[X]+Y,
+      AA = myPerlin.p[A]+Z,
       AB = myPerlin.p[A+1]+Z,
       B = myPerlin.p[X+1]+Y,
       BA = myPerlin.p[B]+Z,
       BB = myPerlin.p[B+1]+Z;
 
+  //add up corner contributions and return
   return
-    lerp(w, lerp(v, lerp(u, grad(myPerlin.p[AA], x, y, z),      // AND ADD
-                           grad(myPerlin.p[BA], x-1, y, z)),    // BLENDED
-                   lerp(u, grad(myPerlin.p[AB], x, y-1, z),     // RESULTS
-                           grad(myPerlin.p[BB], x-1, y-1, z))), // FROM 8
-           lerp(v, lerp(u, grad(myPerlin.p[AA+1], x, y, z-1),   // CORNERS
-                           grad(myPerlin.p[BA+1], x-1, y, z-1)),// OF CUBE
+    lerp(w, lerp(v, lerp(u, grad(myPerlin.p[AA], x, y, z),
+                           grad(myPerlin.p[BA], x-1, y, z)),
+                   lerp(u, grad(myPerlin.p[AB], x, y-1, z),
+                           grad(myPerlin.p[BB], x-1, y-1, z))),
+           lerp(v, lerp(u, grad(myPerlin.p[AA+1], x, y, z-1),
+                           grad(myPerlin.p[BA+1], x-1, y, z-1)),
                    lerp(u, grad(myPerlin.p[AB+1], x, y-1, z-1 ),
                            grad(myPerlin.p[BB+1], x-1, y-1, z-1 ))));
 }

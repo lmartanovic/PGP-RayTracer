@@ -23,6 +23,7 @@
  Basic lookAt camera and projection plane handling;
  Adaptive Subsampling.
  Basic procedural textures.
+ BMP export.
  (See TODO for rough prject roadmap).
 
 -------------------------------------------------------------------------------

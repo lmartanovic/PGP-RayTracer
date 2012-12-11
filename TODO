@@ -1,4 +1,4 @@
-- Redo Makefile
-- SDL?
-- Testing, measuring
-- double -> float
+* Further acceleration
+* More geometry primitives
+* Picture texture support
+* ...

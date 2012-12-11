@@ -24,8 +24,6 @@
 
 #include <vector>
 
-#include <SFML/Graphics.hpp>
-
 #include "Color.h"
 #include "Light.h"
 #include "Object.h"
@@ -61,8 +59,6 @@ public:
   Color& getBackgroundColor();
   //! Background color setter
   void setBackgroundColor(const Color& col);
-  //! Output image setter
-  void setOutputImage(const sf::Image& img);
 
   //! Main raytracing method
   /*!
@@ -77,7 +73,6 @@ private:
   std::vector<Light> lights;    /*!< List of all primary light sources */
   std::vector<Object> objects;  /*!< List of all renderable obects */
   Color backgroundColor;        /*!< Default background color */
-  sf::Image outputImg;          /*!< Output image */
 };
 
 #endif // SCENE_H
