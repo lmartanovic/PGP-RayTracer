@@ -14,20 +14,20 @@ short BM = 0x4d42;	//"BM"
 //BMP header struct
 struct bmp_header
 {
-    long size_of_file;
-    long reserve;
-    long offset_of_pixle_data;
-    long size_of_header;
-    long width;
-    long height;
+    int32_t size_of_file;
+    int32_t reserve;
+    int32_t offset_of_pixle_data;
+    int32_t size_of_header;
+    int32_t width;
+    int32_t height;
     short num_of_colour_plane;
     short num_of_bit_per_pix;
-    long compression;
-    long size_of_pix_data;
-    long h_resolution;
-    long v_resolution;
-    long num_of_colour_in_palette;
-    long important_colours;
+    int32_t compression;
+    int32_t size_of_pix_data;
+    int32_t h_resolution;
+    int32_t v_resolution;
+    int32_t num_of_colour_in_palette;
+    int32_t important_colours;
 } HEADER;
 
 

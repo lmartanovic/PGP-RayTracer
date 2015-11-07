@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -pedantic -O2
+CFLAGS=--std=c++14 -Wall -pedantic -O2
 LIBS=-lm
 BIN=RayTracer
 SRC=./src
@@ -45,7 +45,7 @@ doc:
 	doxygen doxyfile
 
 clean:
-	rm -rf *.o *~ $(BIN) $(ZIP) $(DOC)
+	rm -rf *.o *~ $(BIN) $(ZIP) $(DOC) result.bmp
 
 clear: clean
 
